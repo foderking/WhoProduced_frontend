@@ -1,3 +1,3 @@
-# Deminifier.js
+# WhoProduced
 
-A web application for decyphering minified javascript.
+Find out who produced some of your favorite tracks.
