@@ -22,6 +22,8 @@ const InputField = (type, init) =>
 			onChange: onChange,
 			value: value
 		},
+		state : value,
+		setState: setValue,
 		reset
 	}
 }
