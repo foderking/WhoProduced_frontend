@@ -9,10 +9,18 @@ import { useState } from 'react'
 const App = () =>
 {
   const song = InputField('text', '')
-  const album = InputField('text', '')
+  const search = InputField('text', '')
   // const producer = InputField('text', [])
   const [producer, setproducer] = useState([])
 
+
+  const [ex, setex] = useState(
+    {
+    "tracks": {
+        "href": "https://api.spotify.com/v1/search?query=the+message&type=track&offset=0&limit=5",
+        "items": []}}
+  )
+  
   async function getPageKey(query)
   {
     const res = await axios.get(`https://en.wikipedia.org/w/rest.php/v1/search/title?q=${query}&limit=1`)
@@ -60,11 +68,46 @@ const App = () =>
   }
 
 
+  async function getAlbum(query)
+  {
+    const url = 'http://localhost:8888/search'
+    const headers = {
+      "Content-Type": "application/json"
+    }
+    const data = {
+      query ,
+      type: 'track',
+      limit:'5'
+    }
+
+    console.log(url , query)
+
+    try{
+      const a = await axios.post(url, data , headers)
+      console.log('ans',a.data)
+      setex(a.data)
+    }
+    catch (e){
+      console.log(e)
+      console.log('couldnt get album', e)
+    }
+    
+  }
+
   async function handleSubmit(e)
   {
     e.preventDefault()
-
-    const key = await getPageKey(album.main.value)
+    console.log(ex)
+    try
+    {
+      await getAlbum(search.main.value)
+    }
+    catch (error)
+    {
+      return
+    }
+const x =`
+    const key = await getPageKey(search.main.value)
 
     const source = await getSource(key)
     // console.log(source)
@@ -79,6 +122,7 @@ const App = () =>
     const producer = getProducer(valueKey, trackList)
 
     setproducer(producer)
+    `
     // const map = {"first" : "1", "second" : "2"};
 // console.log(getKeyByValue(map,"2"))
     // wiki()
@@ -95,30 +139,21 @@ const App = () =>
         <p className='lead'>Find out who produced some of your favorite tracks</p>
       </header>
 
-      <form onSubmit={handleSubmit}>
-        <div className='form-group'>
-          <label htmlFor='songName'>
-            Song
-          </label>
-          <input
-            {...song.main}
-            className='form-control'
-            id="songName"
-            placeholder='e.g The Message'
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="albumName">Album</label>
-          <input
-            {...album.main}
-            className="form-control"
-            id="albumName"
-            placeholder="e.g It was written" />
-        </div>
-        <button className='btn btn-secondary mb-2'>Search</button>
-      </form>
-      <h2>Producer</h2>
-      <ul>
+
+      <div className='mb-5 p-5'>
+        <form className="form-inline" onSubmit={handleSubmit}>
+          <div className="input-group mb-2 mr-sm-2 mb-sm-0">
+            <input
+              {...search.main}
+              className="form-control"
+              id="inlineFormInputGroup"
+              placeholder='Search here...'
+            />
+            <button type="submit" className="btn btn-dark">Search</button>
+          </div>
+        </form>
+      </div>
+     <ul>
       {
         Array.isArray(producer) 
         ? 
@@ -126,8 +161,80 @@ const App = () =>
         : producer
       }
       </ul>
+
+      {
+        ex.tracks.items.map(each => <Card each={each} />)
+      }
     </div>
   )
 }
 
+function SearchView({tracks})
+{
+  return (
+    <div className="d-flex align-items-center">
+      <div className="flex-shrink-0">
+        <img src={tracks.items[0].album.images[1].url} alt="..." />
+      </div>
+      <div className="flex-grow-1 ms-3">
+        This is some content from a media component. You can replace this with any content and adjust it as needed.
+      </div>
+      <div className="flex-grow-1 ms-3">
+        This is some content from a media component. You can replace this with any content and adjust it as needed.
+      </div>
+    </div>
+  )
+}
+
+function Card({each})
+{
+  return (
+    <div className="ant-row _27ig9" >
+      <div className="ant-col ant-col-xs-24 ant-col-md-19">
+        <a href="/Info/It-Was-Written-Damian-Marley-Stephen-Marley-Capleton-Drag-On/03M3oEPsk8WjwMlVOKBFXv">
+          <div className="ant-row F-pFw" >
+            <div className="ant-col ant-col-xs-7 ant-col-sm-6 ant-col-md-5 ant-col-lg-4">
+              <img src={each.album.images[1].url} />
+            </div>
+            <div className="ant-col _2whaa ant-col-xs-17 ant-col-lg-20">
+              <div className="ant-row _3EW_U" >
+                <div className="ant-col _28Yqm ant-col-xs-24 ant-col-lg-8">
+                  <div className="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line _12mCB">
+                      {each.artists.map(each => each.name).join(', ')}
+                  </div>
+
+                  <div className="ant-typography ant-typography-ellipsis ant-typography-ellipsis-multiple-line _1guJu">
+                    {each.name}
+                  </div>
+                </div>
+
+                <div className="ant-col _1hTOV ant-col-xs-24 ant-col-lg-16">
+                  <div className="OKyL0">
+                    <p className="_1vVQ4">{each.album.release_date}</p>
+                    <p className="lUyFq">Release Date</p>
+                  </div>
+
+                  <div className="OKyL0">
+                    <p className="_1vVQ4">{each.popularity}</p>
+                    <p className="lUyFq">Popularity</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div className="ant-col _1C1NE ant-col-xs-24 ant-col-md-5">
+        <a href={each.external_urls.spotify} target="_blank" className="USeLs">
+          <img className="_9H-oe" src="https://img.icons8.com/ios-filled/50/000000/spotify.png" />
+        </a>
+      </div>
+    </div>
+  )
+}
+
+
 export default App
+
+
