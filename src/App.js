@@ -2,20 +2,15 @@ import React from 'react'
 import InputField from './Functionality/InputField'
 import parseWiki from 'infobox-parser'
 import axios from 'axios'
-// import RandomNumGen from './Functionality/random'
-import { useState } from 'react'
+import RandomNumGen from './Functionality/random'
+import { useState, useEffect } from 'react'
 import {
   Switch,
   Route,
-  Link,
   useParams,
 } from 'react-router-dom'
-
-
-
-
-
-
+import { Card } from './Components/Card'
+import { ViewHeader } from './ViewHeader'
 
 
 
@@ -35,17 +30,15 @@ const App = () =>
     }
   )
   const search = InputField('text', '')
-  // getPageKey(spotifyObject.state.tracks.items.length ? spotifyObject.state.tracks.items[0]  : {})
-  //   name: 'it was written',
-  //   artists: [{name:'nas'}],
-  // })
-  
+
+
   return (
     <div className='container '>
       <Switch>
         <Route path='/track/:id'>
-          <ViewInfo spotify={spotifyObject} search={search} />
+          <ViewInfo spotify={spotifyObject} />
         </Route>
+
         <Route path='/' >
           <Index spotify={spotifyObject} search={search}/>
         </Route>
@@ -55,88 +48,34 @@ const App = () =>
 }
 
 
-function Card({each})
+const ViewInfo =  ({spotify}) =>
 {
-  return (
-    <div className="ant-row _27ig9" >
-      <div className="ant-col ant-col-xs-24 ant-col-md-19">
-        <Link to={`/track/${each.id}`} onClick={() => console.log('clikc')}>
-          <div className="ant-row F-pFw" >
-            <div className="ant-col ant-col-xs-7 ant-col-sm-6 ant-col-md-5 ant-col-lg-4">
-              <img src={each.album.images[1].url} />
-            </div>
-            <div className="ant-col _2whaa ant-col-xs-17 ant-col-lg-20">
-              <div className="ant-row _3EW_U" >
-                <div className="ant-col _28Yqm ant-col-xs-24 ant-col-lg-8">
-                  <div className="ant-typography ant-typography-ellipsis ant-typography-single-line ant-typography-ellipsis-single-line _12mCB">
-                      {each.artists.map(each => each.name).join(', ')}
-                  </div>
-
-                  <div className="ant-typography ant-typography-ellipsis ant-typography-ellipsis-multiple-line _1guJu">
-                    {each.name}
-                  </div>
-                </div>
-
-                <div className="ant-col _1hTOV ant-col-xs-24 ant-col-lg-16">
-                  <div className="OKyL0">
-                    <p className="_1vVQ4">{each.album.release_date}</p>
-                    <p className="lUyFq">Release Date</p>
-                  </div>
-
-                  <div className="OKyL0">
-                    <p className="_1vVQ4">{each.popularity}</p>
-                    <p className="lUyFq">Popularity</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Link>
-      </div>
-
-      <div className="ant-col _1C1NE ant-col-xs-24 ant-col-md-5">
-        <a href={each.external_urls.spotify} target="_blank" className="USeLs">
-          <img className="_9H-oe" src="https://img.icons8.com/ios-filled/50/000000/spotify.png" />
-        </a>
-      </div>
-    </div>
-  )
-}
-
-
-
-function querEscape(string)
-{
-  return string.trim().replace(/\s+/g, '%20')
-}
-
-
-const ViewInfo =  ({spotify, search}) =>
-{
-  const id = useParams().id
-
-  const items = spotify.state.tracks.items
-  const track = items.find(each => each.id === id)
-  console.log('object', track)
-
   const [producer, setproducer] = useState([])
 
+  const id = useParams().id
+  const items = spotify.state.tracks.items
+  const track = items.find(each => each.id === id)
 
+  console.log('object', track)
+
+
+
+  function querEscape(string)
+  {
+    return string.trim().replace(/\s+/g, '%20')
+  }
 
 
   async function getPageKey(obj)
   {
-
-
-
     if (!obj.name ){
       console.log('empty obj',obj)
       return
     }
 
 
-
     const query = obj.name.replace(/\(feat.*?\)/g,'') + '%20' + obj.artists.map(each => each.name).join('%20') + '%20'+ obj.album.name + ' ' + String(obj.album.release_date).slice(0,4)
+
     console.log('release ', obj.album.release_date.slice(0,4))
 
     const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=1&srsearch=' +  querEscape(query)
@@ -158,9 +97,10 @@ const ViewInfo =  ({spotify, search}) =>
   async function getSource(key)
   {
     const res = await axios.get( 'https://en.wikipedia.org/w/rest.php/v1/page/'+key)
-    console.log('source', res.data.source.length)
+    const repl = res.data.source.replace(/{{ref.*?\|a|b|c\|\[a|b|c\]}}/gmis, '')
+    console.log('source',repl)//res.data.source.length)
 
-    return res.data.source
+    return repl// res.data.source.replace(/{{ref\|a\|\[a\]}}/gmi, '')
   }
 
 
@@ -169,8 +109,14 @@ const ViewInfo =  ({spotify, search}) =>
   {
     let re = /{{track.*list.*?^}}/gmsi
 
+    const mach =source.match(re)
+
+    if (!source.match(re)){
+      return null
+    }
+
     const ma = source.match(re).length ?  source.match(re)[0] :  source.match(re)
-    console.log('matched', ma)
+    console.log('matched', ma, mach)
 
     return ma 
   }
@@ -198,18 +144,39 @@ const ViewInfo =  ({spotify, search}) =>
     const k = key.slice(5)
 
     const producer =tracklist[ 'extra' + k]
-    console.log('extra'+ k, tracklist, producer)
+    console.log('extra'+ k, tracklist )
+    
+
+    if (!producer){
+      console.log('no producer info available')
+      return null
+    }
 
     return producer
   }
 
 
+  function handle(tracklist, trackname)
+  {
+    console.log('trackname',trackname)
+    const all = tracklist.replace(/^}}.*?^{{/gmsi, '}}abcd{{').split('abcd')
+    console.log('split', all )
 
+    const parsed = ( all.map(each => parseTracklist(each)))
+    console.log('parse',parsed)
 
+    const keyed  = parsed.map(each => getKeyByValue(each, trackname) )
+    console.log('keyvalue',keyed)
+    
+    const ans = keyed.find(each => each)
+    const parans = parsed.find(each => getKeyByValue(each, trackname) === ans)
+    console.log('ahndle', ans,parans)
 
-
-
-
+    if (!ans) {
+      return null
+    }
+    return [ans, parans] 
+  }
 
 
 
@@ -217,43 +184,83 @@ const ViewInfo =  ({spotify, search}) =>
 
   async function a()
   {
+    const trackname = track.name.replace(/\(feat.*?\)/g, '').trim()
     const key = await getPageKey(track)
     console.log('key ', key)
 
+    if (!key){
+      console.log('wiki id not found')
+      return
+    }
+
     const source  = await getSource(key)
 
-    const tracklist = (getTracklist(source))
+    const tracklist = getTracklist(source)
 
-    const parse = parseTracklist(tracklist)
-    console.log(parse)
+    if (!tracklist) {
+      console.log('no tracklist found')
+      return
+    }
+    
+    // const parse = parseTracklist(tracklist)
+    // console.log(parse, 'parsed')
 
-    console.log('parsed trackist', (parse))
+    // console.log('parsed trackist', (parse))
 
-    const valueKey = getKeyByValue(parse, search.main.value)
-    console.log('key by value', valueKey)
+    // console.log('trackname', trackname)
+    // const valueKey = getKeyByValue(parse, trackname)//.trim()// search.main.value)
+    // console.log('key by value', valueKey)
 
-    const producer = getProducer(valueKey, parse)
+    const valuekey = handle(tracklist, trackname)
+    if (!valuekey){
+      console.log('track not found in tracklist')
+      return
+    }
+
+
+    const producer = getProducer(valuekey[0], valuekey[1])
+    if (!producer){
+      return
+    }
 
     console.log(producer, 'producer')
     setproducer(producer)
   }
 
-  a()
+  useEffect(() => {
+    a()
+    //eslint-disable-next-line
+  }, [])
 
 
   return (
     <div>
-      haha
-      {id}
-      <img src={track.album.images[1].url}/>
-      <h2>Producers</h2>
-      {producer}
+      <ViewHeader image={track.album.images[1].url} track={track} />
+
+      <ViewProducer producer={producer} />
     </div>
   )
 }
 
+export function toMin(seconds)
+{
+  const min = parseInt(seconds / 60)
+  const sec = parseInt(seconds % 60)
+  
+  return `${min}: ${sec}`
+}
 
-
+const ViewProducer = ({producer}) =>
+<div className='my-5'>
+  <h2>Producers</h2>
+  <ul>
+  {
+    Array.isArray(producer) ?
+      producer.map(each => <li key={RandomNumGen()} >{each}</li> )
+      : producer
+  }
+  </ul>
+</div>
 
 
 const Index = ({spotify, search}) =>
@@ -336,5 +343,3 @@ const Index = ({spotify, search}) =>
 }
 
 export default App
-
-
