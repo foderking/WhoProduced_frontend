@@ -1,10 +1,10 @@
 import React from 'react';
-import { toMin } from './App';
+import { toMin } from "../Functionality/toMin";
 
-export const ViewHeader = ({ image, track }) => <div class="ant-row _1Hykx rowgap">
+export const ViewHeader = ({ track, wikiurl }) => <div class="ant-row _1Hykx rowgap">
   <div class="ant-col _2-PUF ant-col-xs-24 ant-col-md-10 ant-col-lg-7">
     <div class="_311TL">
-      <img alt='album art' class="_1Z3HS" src={image} />
+      <img alt='album art' class="_1Z3HS" src={track.album.images[1].url} />
     </div>
   </div>
   <div class="ant-col _1iPHb ant-col-xs-24 ant-col-md-14 ant-col-lg-17">
@@ -12,9 +12,17 @@ export const ViewHeader = ({ image, track }) => <div class="ant-row _1Hykx rowga
       <h3 class="ant-typography _33nfP">{track.artists.map(each => each.name).join()}</h3>
       <h1 class="ant-typography _1okg0">{track.name}</h1>
     </div>
-    <div class="_1LTl0"><button type="button" class="ant-btn ant-btn-icon-only hgoDm undefined _2y01H"><i
-      class="_3AXtk"></i></button><a rel='noreferrer' href="https://open.spotify.com/track/3VqeTFIvhxu3DIe4eZVzGq" target="_blank"
-        class="ant-btn ant-btn-icon-only hgoDm _1v_0F"><i class="_9H-oe"></i></a></div><span class="_2rLB1">
+    <div class="_1LTl0">
+      {/* <button type="button" class="ant-btn ant-btn-icon-only hgoDm undefined _2y01H">
+        <i class="_3AXtk"></i>
+      </button> */}
+      <a rel='noreferrer'  href={track.external_urls.spotify} target="_blank" class="ant-btn ant-btn-icon-only hgoDm _1v_0F">
+          <img alt='album art' className="_9H-oe spotty" src="https://img.icons8.com/ios-filled/50/000000/spotify.png" />
+      </a>
+
+    </div>
+
+    <span class="_2rLB1">
       <div class="ant-row _3JZcg rowgap">
         <div class="ant-col _2MShg ant-col-xs-12 ant-col-md-6">
           <div class="YNn26">

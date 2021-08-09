@@ -2,7 +2,6 @@ import React from 'react'
 import InputField from './Functionality/InputField'
 import parseWiki from 'infobox-parser'
 import axios from 'axios'
-import RandomNumGen from './Functionality/random'
 import { useState, useEffect } from 'react'
 import {
   Switch,
@@ -10,7 +9,8 @@ import {
   useParams,
 } from 'react-router-dom'
 import { Card } from './Components/Card'
-import { ViewHeader } from './ViewHeader'
+import { ViewHeader } from './Components/ViewHeader'
+import { ViewProducer } from './Components/ViewProducer'
 
 
 
@@ -22,6 +22,7 @@ import { ViewHeader } from './ViewHeader'
 
 const App = () =>
 {
+  // Spotify search results
   const spotifyObject = InputField('text', {
       "tracks": {
         "href": "https://api.spotify.com/v1/search?query=the+message&type=track&offset=0&limit=5",
@@ -29,6 +30,7 @@ const App = () =>
       }
     }
   )
+  
   const search = InputField('text', '')
 
 
@@ -47,36 +49,43 @@ const App = () =>
   )
 }
 
-
+// Views Information for selected track
 const ViewInfo =  ({spotify}) =>
 {
+  // producer info
   const [producer, setproducer] = useState([])
-
+  // object for setting errors
+  const [error, seterror] = useState('')
+  // id of selected track
   const id = useParams().id
   const items = spotify.state.tracks.items
+  // selected track object
   const track = items.find(each => each.id === id)
+  // spinner
+  const [spinner, setspinner] = useState('')
 
   console.log('object', track)
 
 
-
+  // cleans string before sending request
+  // returns string
   function querEscape(string)
   {
     return string.trim().replace(/\s+/g, '%20')
   }
 
-
+  // gets wikipedia key from selected track object
+  // returns string 
   async function getPageKey(obj)
   {
     if (!obj.name ){
-      console.log('empty obj',obj)
-      return
+      console.log('empty or invalid obj',obj)
+      return null
     }
 
-
+    // search query to send to wikipedia
     const query = obj.name.replace(/\(feat.*?\)/g,'') + '%20' + obj.artists.map(each => each.name).join('%20') + '%20'+ obj.album.name + ' ' + String(obj.album.release_date).slice(0,4)
-
-    console.log('release ', obj.album.release_date.slice(0,4))
+    // console.log('release ', obj.album.release_date.slice(0,4))
 
     const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=1&srsearch=' +  querEscape(query)
     const res = await axios.get(url)
@@ -85,26 +94,36 @@ const ViewInfo =  ({spotify}) =>
       console.log('no suitable wikipedia page')
       return null
     }
+    // const wikiUrl = 'https://en.wikipedia.org/?curid='+res.data.query.search[0].pageid
 
-    const wikiUrl = 'https://en.wikipedia.org/?curid='+res.data.query.search[0].pageid
+    // gets name of first search result and converts to key suitable for another wikipedia request
     const k = res.data.query.search[0].title.replace(/\s+/g, '_')
-    console.log('page key', k,url,wikiUrl)// res.data.query.search)//, res.data.pages[0])
+    console.log('page key', k,url)
 
     return k
   }
 
 
+  // gets wikipedia page in wikitext from key
+  // returns string
   async function getSource(key)
   {
-    const res = await axios.get( 'https://en.wikipedia.org/w/rest.php/v1/page/'+key)
-    const repl = res.data.source.replace(/{{ref.*?\|a|b|c\|\[a|b|c\]}}/gmis, '')
-    console.log('source',repl)//res.data.source.length)
+    const res = await axios.get( 'https://en.wikipedia.org/w/rest.php/v1/page/' + key)
 
-    return repl// res.data.source.replace(/{{ref\|a\|\[a\]}}/gmi, '')
+    if (!res.data.source) {
+      console.log('unable to find source from supplied key')
+      return null
+    }
+    // cleans result
+    const repl = res.data.source.replace(/{{ref.*?\|a|b|c\|\[a|b|c\]}}/gmis, '')
+    console.log('source',repl)
+
+    return repl
   }
 
 
-
+  // extracts {{tracklist}} section from the wikipedia page source
+  // returns array  containing the {{tracklist}} section
   function getTracklist(source)
   {
     let re = /{{track.*list.*?^}}/gmsi
@@ -112,6 +131,7 @@ const ViewInfo =  ({spotify}) =>
     const mach =source.match(re)
 
     if (!source.match(re)){
+      console.log('no tracklist found')
       return null
     }
 
@@ -122,14 +142,16 @@ const ViewInfo =  ({spotify}) =>
   }
 
 
-
+  // parses raw tracklist source
+  // returns object
   function parseTracklist(tracklist)
   {
     return parseWiki(tracklist).general
   }
 
 
-
+  // finds the songs key name in the object to use to find the producer value later on
+  // TODO: make the function better by finding the best match instead of exact match
   function getKeyByValue(object, value) {
     return Object.keys(object)
       .find(key =>
@@ -138,13 +160,17 @@ const ViewInfo =  ({spotify}) =>
   }
 
 
-
+  // finds producer info from object given the key no.
+  // returns array of string containing producer names if any exists
   function getProducer(key, tracklist)
   {
+    // finds key no. Ex: from "title12" => "12"
     const k = key.slice(5)
 
     const producer =tracklist[ 'extra' + k]
+
     console.log('extra'+ k, tracklist )
+    console.log(producer, 'producer')
     
 
     if (!producer){
@@ -156,118 +182,124 @@ const ViewInfo =  ({spotify}) =>
   }
 
 
-  function handle(tracklist, trackname)
+  /*
+  *  given a  string  possibly containing  1 or more - {{tracklist}} - sections
+  *  parses each {{tracklist}} separately and finds the best result
+  *  returns array containing the key name and object of best result
+  */
+  function getKeyFromTracklist(tracklist, trackname)
   {
     console.log('trackname',trackname)
+
+    // splits different sections into array
     const all = tracklist.replace(/^}}.*?^{{/gmsi, '}}abcd{{').split('abcd')
     console.log('split', all )
-
+    // parse each string in array into object
     const parsed = ( all.map(each => parseTracklist(each)))
     console.log('parse',parsed)
-
+    // finds tracklist object that contains the name of the song to be found
+    // invalid objects are mapped to 'undefined'
     const keyed  = parsed.map(each => getKeyByValue(each, trackname) )
     console.log('keyvalue',keyed)
-    
+    // finds the correct object - one that isn't undefined
     const ans = keyed.find(each => each)
     const parans = parsed.find(each => getKeyByValue(each, trackname) === ans)
     console.log('ahndle', ans,parans)
 
     if (!ans) {
+      console.log('track not found in tracklist')
       return null
     }
+    // key name and object which the key is in
     return [ans, parans] 
   }
 
 
 
-
-
-  async function a()
+  async function main(track)
   {
-    const trackname = track.name.replace(/\(feat.*?\)/g, '').trim()
+    setspinner('yes')
+    // search wikipedia for the song
     const key = await getPageKey(track)
-    console.log('key ', key)
 
     if (!key){
-      console.log('wiki id not found')
+      seterror('No search result from Wikipedia')
       return
     }
-
+    // gets the source of the found page in wikitext format
     const source  = await getSource(key)
 
+    if (!source) {
+      seterror('Unable to find wikipedia source from key')
+      return
+    }
+    // converts wikitext source to object
     const tracklist = getTracklist(source)
 
     if (!tracklist) {
-      console.log('no tracklist found')
+      seterror('No tracklist section found')
       return
     }
-    
-    // const parse = parseTracklist(tracklist)
-    // console.log(parse, 'parsed')
+    // cleans trackname gotten from spotify
+    const trackname = track.name.replace(/\(feat.*?\)/g, '').trim()
 
-    // console.log('parsed trackist', (parse))
+    // gets key given trackname and wikitext source
+    const valuekey = getKeyFromTracklist(tracklist, trackname)
 
-    // console.log('trackname', trackname)
-    // const valueKey = getKeyByValue(parse, trackname)//.trim()// search.main.value)
-    // console.log('key by value', valueKey)
-
-    const valuekey = handle(tracklist, trackname)
     if (!valuekey){
-      console.log('track not found in tracklist')
+      seterror('Unable to find song in tracklist')
       return
     }
-
-
+    // finds producer info
     const producer = getProducer(valuekey[0], valuekey[1])
+
     if (!producer){
+      seterror('Unable to producer info')
       return
     }
 
-    console.log(producer, 'producer')
+
     setproducer(producer)
   }
 
-  useEffect(() => {
-    a()
-    //eslint-disable-next-line
-  }, [])
+
+
+
+
+  // eslint-disable-next-line
+  useEffect(() =>{
+    main(track)
+      .then(d => setspinner('no'))
+      .catch(error => seterror(error))
+      // eslint-disable-next-line
+  }, [track])
 
 
   return (
     <div>
-      <ViewHeader image={track.album.images[1].url} track={track} />
-
-      <ViewProducer producer={producer} />
+      <ViewHeader   track={track}       />
+      <div className='my-4'>
+      {
+        spinner === 'yes'
+        ? <Spinner />
+        :
+          error 
+          ? <Error error={error} />
+          : <ViewProducer producer={producer} />
+      }
+      </div>
     </div>
   )
 }
 
-export function toMin(seconds)
-{
-  const min = parseInt(seconds / 60)
-  const sec = parseInt(seconds % 60)
-  
-  return `${min}: ${sec}`
-}
-
-const ViewProducer = ({producer}) =>
-<div className='my-5'>
-  <h2>Producers</h2>
-  <ul>
-  {
-    Array.isArray(producer) ?
-      producer.map(each => <li key={RandomNumGen()} >{each}</li> )
-      : producer
-  }
-  </ul>
-</div>
 
 
 const Index = ({spotify, search}) =>
 {
-
   const ex = spotify.state
   const setex = spotify.setState
+  const [err, seterr] = useState('')
+  const [spin, setspin] = useState('')
  
 
 
@@ -287,25 +319,31 @@ const Index = ({spotify, search}) =>
 
     console.log(url , query)
 
-    try{
+    try {
+      seterr('')
       const a = await axios.post(url, data , headers)
       console.log('ans',a.data)
+
+      if (!a.data.tracks.items.length) {
+        seterr('No results')
+      }
       setex(a.data)
     }
-    catch (e){
+    catch (e) {
       console.log(e)
       console.log('couldnt get album', e)
     }
-    
   }
 
-  async function handleSubmit(e)
+  function handleSubmit(e)
   {
+    setspin('yes')
     e.preventDefault()
     console.log(ex)
 
-    await getAlbum(search.main.value)
-
+    getAlbum(search.main.value)
+      .then(data => setspin(''))
+      .catch(error => seterr(error))
   }
 
 
@@ -334,6 +372,12 @@ const Index = ({spotify, search}) =>
 
         <div>
           {
+            spin ?
+            <Spinner />
+            :
+            err ?
+            <Error error={err} />
+            :
             ex.tracks.items.map(each => <Card key={each.id} each={each} />)
           }
         </div>
@@ -341,5 +385,18 @@ const Index = ({spotify, search}) =>
     </div>
   )
 }
+const Error =  ({error}) =>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Error!</strong> {error}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+
+const Spinner = () =>
+<div className='my-5 py-5 text-center'>
+  <div class="spinner-border spinner-custom" role="status">
+    {/* <span class="sr-only">Loading...</span> */}
+  </div>
+</div>
 
 export default App
