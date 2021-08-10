@@ -1,7 +1,7 @@
 import React from 'react';
 import { toMin } from "../Functionality/toMin";
 
-export const ViewHeader = ({ track, wikiurl }) => <div class="ant-row _1Hykx rowgap">
+export const ViewHeader = ({ track, wiki }) => <div class="ant-row _1Hykx rowgap">
   <div class="ant-col _2-PUF ant-col-xs-24 ant-col-md-10 ant-col-lg-7">
     <div class="_311TL">
       <img alt='album art' class="_1Z3HS" src={track.album.images[1].url} />
@@ -19,7 +19,9 @@ export const ViewHeader = ({ track, wikiurl }) => <div class="ant-row _1Hykx row
       <a rel='noreferrer'  href={track.external_urls.spotify} target="_blank" class="ant-btn ant-btn-icon-only hgoDm _1v_0F">
           <img alt='album art' className="_9H-oe spotty" src="https://img.icons8.com/ios-filled/50/000000/spotify.png" />
       </a>
-
+      <a rel='noreferrer'  href={wiki} target="_blank" class="ant-btn ant-btn-icon-only hgoDm _1v_0F">
+          <img alt='album art' className="_9H-oe spotty" width='45px' src="https://image.flaticon.com/icons/png/64/48/48927.png" />
+      </a>
     </div>
 
     <span class="_2rLB1">

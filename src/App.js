@@ -11,6 +11,8 @@ import {
 import { Card } from './Components/Card'
 import { ViewHeader } from './Components/ViewHeader'
 import { ViewProducer } from './Components/ViewProducer'
+import Nav from './Components/Nav2'
+import Footer from './Components/Footer2'
 
 
 
@@ -36,6 +38,8 @@ const App = () =>
 
   return (
     <div className='container '>
+      <Nav />
+
       <Switch>
         <Route path='/track/:id'>
           <ViewInfo spotify={spotifyObject} />
@@ -45,6 +49,7 @@ const App = () =>
           <Index spotify={spotifyObject} search={search}/>
         </Route>
       </Switch>
+      {/* <Footer /> */}
     </div>
   )
 }
@@ -63,6 +68,8 @@ const ViewInfo =  ({spotify}) =>
   const track = items.find(each => each.id === id)
   // spinner
   const [spinner, setspinner] = useState('')
+  
+  const [wikiurl, setwikiurl] = useState('/#')
 
   console.log('object', track)
 
@@ -108,14 +115,17 @@ const ViewInfo =  ({spotify}) =>
   // returns string
   async function getSource(key)
   {
-    const res = await axios.get( 'https://en.wikipedia.org/w/rest.php/v1/page/' + key)
+    const url = 'https://en.wikipedia.org/w/rest.php/v1/page/' + key
+    const res = await axios.get( url )
+    // sets the link to wiki page
+    setwikiurl( 'https://en.wikipedia.org/wiki/' + key)
 
     if (!res.data.source) {
       console.log('unable to find source from supplied key')
       return null
     }
     // cleans result
-    const repl = res.data.source.replace(/{{ref.*?\|a|b|c\|\[a|b|c\]}}/gmis, '')
+    const repl = res.data.source//.replace(/{{ref.*?\|a|b|c\|\[a|b|c\]}}/gmis, '')
     console.log('source',repl)
 
     return repl
@@ -263,7 +273,7 @@ const ViewInfo =  ({spotify}) =>
   }
 
 
-
+  // console.log(wikiurl)
 
 
   // eslint-disable-next-line
@@ -277,7 +287,7 @@ const ViewInfo =  ({spotify}) =>
 
   return (
     <div>
-      <ViewHeader   track={track}       />
+      <ViewHeader   track={track} wiki={wikiurl}      />
       <div className='my-4'>
       {
         spinner === 'yes'
@@ -370,7 +380,7 @@ const Index = ({spotify, search}) =>
           </form>
         </div>
 
-        <div>
+        <div className='hh'>
           {
             spin ?
             <Spinner />
