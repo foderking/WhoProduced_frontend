@@ -23,7 +23,7 @@ const  ProdCard = ({ name }) =>
         <div className="ant-row F-pFw rowgap">
           <div className="ant-col  ant-col-xs-7 ant-col-sm-6 ant-col-md-5 ant-col-lg-4">
           {/* <div className='col-2'> */}
-            <img alt='album art' src='http://getdrawings.com/free-icon/unknown-user-icon-58.png' />
+            <img alt='album art' src='/prodthumb.png' />
           </div>
 
           <div className="ant-col _2whaa ant-col-xs-17 ant-col-lg-20">
