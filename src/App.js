@@ -314,7 +314,7 @@ const Index = ({spotify, search}) =>
 
   async function getAlbum(query)
   {
-    const url = 'http://localhost:8888/search'
+    const url = 'https://whoproduced.herokuapp.com/search'
 
     const headers = {
       "Content-Type": "application/json"
