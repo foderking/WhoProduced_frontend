@@ -11,8 +11,8 @@ import {
 import { Card } from './Components/Card'
 import { ViewHeader } from './Components/ViewHeader'
 import { ViewProducer } from './Components/ViewProducer'
-import Nav from './Components/Nav2'
-import Footer from './Components/Footer2'
+// import Nav from './Components/Nav2'
+// import Footer from './Components/Footer2'
 
 
 
@@ -48,7 +48,7 @@ const App = () =>
           <Index spotify={spotifyObject} search={search}/>
         </Route>
       </Switch>
-      <Footer /> 
+      {/* <Footer />  */}
     </div>
   )
 }
