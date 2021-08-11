@@ -38,7 +38,6 @@ const App = () =>
 
   return (
     <div className='container '>
-      <Nav />
 
       <Switch>
         <Route path='/track/:id'>
@@ -49,7 +48,7 @@ const App = () =>
           <Index spotify={spotifyObject} search={search}/>
         </Route>
       </Switch>
-      {/* <Footer /> */}
+      <Footer /> 
     </div>
   )
 }
@@ -288,7 +287,7 @@ const ViewInfo =  ({spotify}) =>
   return (
     <div>
       <ViewHeader   track={track} wiki={wikiurl}      />
-      <div className='my-4'>
+      <div className='hh my-4'>
       {
         spinner === 'yes'
         ? <Spinner />

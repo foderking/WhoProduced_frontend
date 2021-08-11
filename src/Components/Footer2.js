@@ -4,8 +4,8 @@ import React from 'react'
 const Footer2 = () => 
 {
 	return (
-		<footer class="text-muted py-5 bg-light">
-			<div class="container">
+		<footer class="text-muted footer mt-auto bg-light">
+			<div class="">
 				<p class="float-end mb-1">
 					<a href="#">Back to top</a>
 				</p>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { toMin } from "../Functionality/toMin";
 
-export const ViewHeader = ({ track, wiki }) => <div class="ant-row _1Hykx rowgap">
+export const ViewHeader = ({ track, wiki }) => <div class="my-5 ant-row _1Hykx rowgap">
   <div class="ant-col _2-PUF ant-col-xs-24 ant-col-md-10 ant-col-lg-7">
     <div class="_311TL">
       <img alt='album art' class="_1Z3HS" src={track.album.images[1].url} />
