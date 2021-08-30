@@ -71,5 +71,5 @@ End with an example of getting some data out of the system or using it for a lit
 
 ## Credits
 
-[infobox-parser](https://github.com/dijs/infobox-parser)
-[minimal-react-template](https://github.com/foderking/Minimal-React-Template)
++ [infobox-parser](https://github.com/dijs/infobox-parser)
++ [minimal-react-template](https://github.com/foderking/Minimal-React-Template)
