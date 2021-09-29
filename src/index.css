@@ -28,7 +28,9 @@ code {
 }
 
 .spinner-custom {
-  width: 7rem; height: 7rem;
+  width: 7rem;
+  height: 7rem;
+  opacity: 0.5;
 }
 
 ._1LTl0 .hgoDm._1v_0F {
