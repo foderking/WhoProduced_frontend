@@ -5,8 +5,8 @@ import { Card } from '../Components/Card';
 import { Spinner } from "../Components/Spinner";
 import { Error } from "../Components/Error";
 
-const DB_URL = 'http://localhost:8888/search'
-// const DB_URL = 'https://whoproduced.herokuapp.com/search';
+//const DB_URL = 'http://localhost:8888/search'
+const DB_URL = 'https://whoproduced.herokuapp.com/search';
 
 
 export const Index = ({ spotify_filler, search }) =>
