@@ -5,7 +5,9 @@ import { Card } from '../Components/Card';
 import { Spinner } from "../Components/Spinner";
 import { Error } from "../Components/Error";
 
-const DB_URL = 'https://whoproduced.herokuapp.com/search';
+const DB_URL = 'http://localhost:8888/search'
+// const DB_URL = 'https://whoproduced.herokuapp.com/search';
+
 
 export const Index = ({ spotify_filler, search }) =>
 {
@@ -34,13 +36,13 @@ export const Index = ({ spotify_filler, search }) =>
     )
   }
 
-  function ErrorAlias(err)
-  { // Error aliases to make them readable to the user
-    if (err === "EMPTY_SPOTIFY_RESPONSE") {
-      return "No Result From Spotify"
-    }
-    else return err
-  }
+  // function ErrorAlias(err)
+  // { // Error aliases to make them readable to the user
+  //   if (err === "EMPTY_SPOTIFY_RESPONSE") {
+  //     return "No Result From Spotify"
+  //   }
+  //   else return err
+  // }
 
   // The exception type for "Index" view
   class IndexViewException {
@@ -66,16 +68,21 @@ export const Index = ({ spotify_filler, search }) =>
     const request_data = {
       query: request_query,
       type: 'track',
+      limit: 10
     }
 
     const response = await axios.post(DB_URL, request_data, request_headers)
 
     console.log('"GetAlbum()" end.')
 
-    if (!response.data.tracks.items.length) { // exception when spotify doesn't find song
-      //  ** TODO ** : refactor error response  on backend
-      throw new exception("Spotify response didn't contain any result", "EMPTY_SPOTIFY_RESPONSE")
-    }   
+    if (response.data.Error) { // Handles Error messages from server
+      // e.g response.data = {"Error: "No result from spotify api", "name": "EMPTY_SPOTIFY_RESPONSE"}
+      const error_message = response.data.Error
+      const error_name = response.data.name ?  response.data.name : "Error"
+
+      console.log(response.data)
+      throw new exception(error_message, error_name)
+    }
     else {
       return response
     }
@@ -94,7 +101,7 @@ export const Index = ({ spotify_filler, search }) =>
     }
     catch (e) {
       console.error(e);
-      NewError(e.message, ErrorAlias(e.name) )
+      NewError(e.message, e.name)
     }
     console.log('"FindAlbum()" end.')
     
