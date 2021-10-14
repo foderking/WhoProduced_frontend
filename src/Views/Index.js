@@ -1,12 +1,10 @@
 import React from 'react';
-import axios from 'axios';
 import { useState } from 'react';
 import { Card } from '../Components/Card';
 import { Spinner } from "../Components/Spinner";
 import { Error } from "../Components/Error";
-
-//const DB_URL = 'http://localhost:8888/search'
-const DB_URL = 'https://whoproduced.herokuapp.com/search';
+import { GetAlbums } from '../Services/SpotifyApi';
+import { NewError } from '../Functionality/Errors';
 
 
 export const Index = ({ spotify_filler, search }) =>
@@ -20,88 +18,19 @@ export const Index = ({ spotify_filler, search }) =>
   const [show_error, SetError] = useState('');
   const [error_header, SetErrorHeader] = useState("Error")
 
-  // Function modifies the "SetError" function and automatically sets "show_error" state back to ""  after a specified period of time
-  function NewError (error_message, error_header)
-  {
-    const TTL = 5000
-    clearInterval(err_timeout)  // resets any existing "show_error" state that hasn't already timed out to ""
-
-    // changes error message to specified error
-    SetError(error_message) // error message
-    SetErrorHeader(error_header) // error heading
-
-    SetErrorTimeout(
-      // resets back to "" after specified time
-      setTimeout(() => SetError(''), TTL)
-    )
-  }
-
-  // function ErrorAlias(err)
-  // { // Error aliases to make them readable to the user
-  //   if (err === "EMPTY_SPOTIFY_RESPONSE") {
-  //     return "No Result From Spotify"
-  //   }
-  //   else return err
-  // }
-
-  // The exception type for "Index" view
-  class IndexViewException {
-    constructor(message, exception_type)
-    {
-      this.message = message;
-      this.name = exception_type;
-    }
-    // Make the exception convert to a pretty string when used as a string
-    // (e.g., by the error console)
-    toString()
-    {
-      return `${this.name}: "${this.message}"`;
-    }
-  }
-
-  async function GetAlbums(request_query, exception)
-  { // Handles query request to backend
-    console.log(`"GetAlbum()".Sending request to ${DB_URL} for "${request_query}"`);
-    const request_headers = {
-      "Content-Type": "application/json"
-    };
-    const request_data = {
-      query: request_query,
-      type: 'track',
-      limit: 10
-    }
-
-    const response = await axios.post(DB_URL, request_data, request_headers)
-
-    console.log('"GetAlbum()" end.')
-
-    if (response.data.Error) { // Handles Error messages from server
-      // e.g response.data = {"Error: "No result from spotify api", "name": "EMPTY_SPOTIFY_RESPONSE"}
-      const error_message = response.data.Error
-      const error_name = response.data.name ?  response.data.name : "Error"
-
-      console.log(response.data)
-      throw new exception(error_message, error_name)
-    }
-    else {
-      return response
-    }
-  }
-
-  async function FindAlbum(request_query)
+  async function SearchSpotify(request_query)
   {
     console.log('start spinner')
     SetSpinner(true);
 
     console.log(`"FindAlbum()"`)
     try {
-      const response = await GetAlbums(request_query, IndexViewException)     // sends request to server
+      const response = await GetAlbums(request_query)     // sends request to server
       SetAlbums(response.data);
       console.log('"FindAlbum()" successful. response ->', response.data);
     }
     catch (e) {
-      console.error(e);
-      NewError(e.message, e.name)
+      NewError(e, SetError, SetErrorHeader, SetErrorTimeout, err_timeout)
     }
     console.log('"FindAlbum()" end.')
     
@@ -114,7 +43,7 @@ export const Index = ({ spotify_filler, search }) =>
     e.preventDefault();
 
 
-    await FindAlbum(search.main.value)
+    await SearchSpotify(search.main.value)
     
     console.log('"handleSubmit()" end.')
   }
@@ -132,13 +61,14 @@ export const Index = ({ spotify_filler, search }) =>
       <section>
 
         <div className='mb-5 p-5'>
-          <form className="form-inline" onSubmit={HandleSubmit}>
-            <div className="input-group mb-2 mr-sm-2 mb-sm-0">
+          <form onSubmit={HandleSubmit}>
+            <div className="input-group form-outline mb-2 mr-sm-2 mb-sm-0">
               <input
                 {...search.main}
                 className="form-control"
+                type='search'
                 id="inlineFormInputGroup"
-                placeholder='Search here...' />
+                placeholder='search song here...' />
 
               <button type="submit" className="btn btn-dark">Search</button>
             </div>
@@ -152,6 +82,7 @@ export const Index = ({ spotify_filler, search }) =>
         <div className='hh'>
           <Spinner show={show_spinner} /> 
           <Error error={show_error} error_header={error_header} />    
+
           {
             show_albums.tracks.items.map(each => <Card key={each.id} each={each} />)
           }

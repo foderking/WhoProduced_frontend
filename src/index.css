@@ -1,3 +1,5 @@
+@import './bundle.css';
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -45,4 +47,13 @@ code {
 
 .hh {
   min-height: 500px;
+}
+
+@media (max-width: 991px) {
+  .USeLs {
+    border: none  !important;; 
+    box-sizing: border-box!important;
+    border-radius: 4px!important;
+    margin-right: 2px!important;
+  }
 }
