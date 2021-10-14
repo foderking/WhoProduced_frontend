@@ -8,6 +8,8 @@
 dist/*
 !dist/index.html
 !dist/prodthumb.png
+!dist/hades.png
+!dist/github.png
 *.log
 
 

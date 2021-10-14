@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card } from '../Components/Card';
 import { Spinner } from "../Components/Spinner";
 import { Error } from "../Components/Error";
-import { GetAlbums } from '../Services/BackendApi';
+import { GetAlbums } from '../Services/SpotifyApi';
 import { NewError } from '../Functionality/Errors';
 
 
@@ -61,13 +61,14 @@ export const Index = ({ spotify_filler, search }) =>
       <section>
 
         <div className='mb-5 p-5'>
-          <form className="form-inline" onSubmit={HandleSubmit}>
-            <div className="input-group mb-2 mr-sm-2 mb-sm-0">
+          <form onSubmit={HandleSubmit}>
+            <div className="input-group form-outline mb-2 mr-sm-2 mb-sm-0">
               <input
                 {...search.main}
                 className="form-control"
+                type='search'
                 id="inlineFormInputGroup"
-                placeholder='Search here...' />
+                placeholder='search song here...' />
 
               <button type="submit" className="btn btn-dark">Search</button>
             </div>
@@ -81,6 +82,7 @@ export const Index = ({ spotify_filler, search }) =>
         <div className='hh'>
           <Spinner show={show_spinner} /> 
           <Error error={show_error} error_header={error_header} />    
+
           {
             show_albums.tracks.items.map(each => <Card key={each.id} each={each} />)
           }

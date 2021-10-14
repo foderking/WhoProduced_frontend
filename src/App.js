@@ -1,40 +1,38 @@
 import React from 'react'
-import InputField from './Functionality/InputField'
 import {
   Switch, Route,
 } from 'react-router-dom'
 import { Info } from './Views/Info'
 import { Index } from './Views/Index'
-// import Nav from './Components/Nav2'
-// import Footer from './Components/Footer2'
-
+import InputField from './Functionality/InputField'
+import Nav from './Components/Nav'
+import Footer from './Components/Footer'
 
 const App = () =>
 {
   const search = InputField('text', '')
-  // Spotify search results
-  const spotify_filler = InputField('text', {
-      "tracks": {
-        "href": "https://api.spotify.com/v1/search?query=the+message&type=track&offset=0&limit=5",
-        "items":[]
-      }
+  const spotify_template = InputField('text', {
+    "tracks": {
+      "href": "",
+      "items": []
     }
-  )
+  })
+
   return (
     <div className='container '>
+      <Nav />
 
       <Switch>
-
         <Route path='/track/:id'>
-          <Info spotify={spotify_filler} />
+          <Info spotify={spotify_template} />
         </Route>
 
         <Route path='/' >
-          <Index spotify_filler={spotify_filler} search={search}/>
+          <Index spotify_filler={spotify_template} search={search} />
         </Route>
-
       </Switch>
 
+      <Footer />
     </div>
   )
 }

@@ -34,7 +34,7 @@ export function NewError (error, SetError, SetErrorHeader, SetErrorTimeout, err_
 	console.error(error)
 
 	const error_message = error.message
-	const error_header  = error.header
+	const error_header  = error.name
 	const TTL = 5000
 	clearInterval(err_timeout)  // resets any existing "show_error" state that hasn't already timed out to ""
 
