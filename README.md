@@ -29,7 +29,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 You would need these software..
 
-+ An Operating System with a working shell ( Bash, Powershell, zsh etc.)
++ An Operating System with a working shell -Bash, Powershell, zsh etc. (linux recommended though, cause that's what i tested on)
 + Git 2.25+
 + npm 7.11+
 + Install yarn `npm install --global yarn`
