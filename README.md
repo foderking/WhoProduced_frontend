@@ -18,7 +18,7 @@
 
 ## About <a name = "about"></a>
 
-This is the source code for WhoProduced - a website for view credits for various songs.
+This is the source code for WhoProduced - a website for view album / song credit information.
 Website can be found [here!](https://whoproduced.netlify.app/)
 
 ## Getting Started <a name = "getting_started"></a>
@@ -27,10 +27,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Things you'll to install this project..
+You would need these software..
 
 + An Operating System with a working shell ( Bash, Powershell, zsh etc.)
-+ The latest version of Git
++ Git 2.25+
++ npm 7.11+
++ Install yarn `npm install --global yarn`
 
 ### Installing
 
@@ -39,8 +41,8 @@ First, clone this project to your local system. You could download as a zip file
 Copy and paste on the terminal
 
 ```sh
-git clone https://github.com/foderking/WhoProduced.git
-cd WhoProduced 
+git clone https://github.com/foderking/WhoProduced_frontend.git
+cd WhoProduced_frontend
 ```
 
 Then install dependencies:
@@ -66,8 +68,6 @@ To run tests:
 ```sh
 yarn test
 ```
-
-End with an example of getting some data out of the system or using it for a little demo.
 
 ## Credits
 
