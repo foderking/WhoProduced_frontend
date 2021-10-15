@@ -10,7 +10,7 @@ export function ProducerCard({ each }) {
         <a href={each.url}>
           <div className="ant-row F-pFw rowgap">
             <div className="ant-col ant-col-xs-7 ant-col-sm-6 ant-col-md-5 ant-col-lg-4">
-              <img alt='album art' src={each.image_url} />
+              <img className='buggy' alt='album art' src={each.image_url} />
             </div>
 
             <div className="ant-col _2whaa ant-col-xs-17 ant-col-lg-20">
@@ -45,7 +45,7 @@ export function ProducerCard({ each }) {
 
       <div className="ant-col _1C1NE ant-col-xs-24 ant-col-md-5">
         <a rel='noreferrer' href={"https://genius.com" + each.api_path} target="_blank" className="USeLs">
-          <img alt='genius logo' className="_9H-oe spotty" src={base_url + '/static/img/genius_logo.png'} />
+          <img alt='genius logo' className="_9H-oe spotty buggy" src={base_url + '/static/img/genius_logo.png'} />
         </a>
       </div>
     </div>

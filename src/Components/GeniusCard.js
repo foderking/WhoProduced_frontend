@@ -10,7 +10,7 @@ export function GeniusCard({ each }) {
         <Link to={`/track/${each.result.id}`} onClick={() => console.log('clikc')}>
           <div className="ant-row F-pFw rowgap">
             <div className="ant-col ant-col-xs-7 ant-col-sm-6 ant-col-md-5 ant-col-lg-4">
-              <img alt='album art' src={each.result.song_art_image_thumbnail_url} />
+              <img className='buggy' alt='album art' src={each.result.song_art_image_thumbnail_url} />
             </div>
 
             <div className="ant-col _2whaa ant-col-xs-17 ant-col-lg-20">
@@ -45,7 +45,7 @@ export function GeniusCard({ each }) {
 
       <div className="ant-col _1C1NE ant-col-xs-24 ant-col-md-5">
         <a rel='noreferrer' href={"https://genius.com" + each.result.api_path} target="_blank" className="USeLs">
-          <img alt='album art' className="_9H-oe spotty" src={base_url + '/static/img/genius_logo.png'} />
+          <img alt='album art' className="_9H-oe spotty buggy" src={base_url + '/static/img/genius_logo.png'} />
         </a>
       </div>
     </div>
