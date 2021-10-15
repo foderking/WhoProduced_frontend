@@ -19,7 +19,7 @@ code {
 }
 
 @media (max-width: 576px){
-._1G5AR, .spotty, img {
+._1G5AR, .spotty, img:not('navv') {
     width: 80px!important;
     height: 80px!important;
 }

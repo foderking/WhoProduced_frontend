@@ -10,7 +10,7 @@ export default function Footer() {
 				<div className='text-center'>
 					<div>
 						<a href="https://github.com/foderking/WhoProduced">
-							<img height='80px' src={logo} alt="GitHub Logo" draggable="false" />
+							<img className='navv' height='80' src={logo} alt="GitHub Logo" draggable="false" />
 						</a>
 					</div>
 				</div>
