@@ -1,11 +1,13 @@
 import React from 'react'
+import base_url from '../Functionality/base_url'
 
+const icon = base_url + "/static/img/hades.png"
 export default function Nav() {
 	return (
 		<div>
-			<nav className="bg-dark">
-				<a className="navbar navbar-brand" href="/">
-					<img src="./hades.png" width="30" height="30" className="d-inline-block align-top" alt="" />
+			<nav className="navbar bg-dark">
+				<a className="navbar-brand" href="/">
+					<img src={icon} width="30px"  className="mx-3 d-inline-block align-top" alt="" />
 				</a>
 			</nav>
 		</div>

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { IndexViewException } from '../Functionality/Errors';
 
-// const base_url = 'https://whoproduced.herokuapp.com';
-const base_url = 'http://localhost:8888';
+import base_url from '../Functionality/base_url'
+
 
 const album_api = base_url + '/search'
 const track_api = base_url + '/id'

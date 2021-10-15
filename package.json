@@ -12,6 +12,7 @@
     "build": "parcel build public/index.html",
     "test": "jest"
   },
+  "proxy": "http://localhost:8888",
   "dependencies": {
     "axios": "^0.21.1",
     "infobox-parser": "^3.6.1",
