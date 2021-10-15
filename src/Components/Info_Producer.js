@@ -1,5 +1,8 @@
 import React from 'react';
 import RandomNumGen from '../Functionality/random';
+import base_url from '../Functionality/base_url';
+
+const producer_img = base_url + '/static/img/prodthumb.png'
 
 export const ViewProducer = ({ producer }) =>
   <div className='my-5'>
@@ -26,7 +29,7 @@ const ProdCard = ({ name }) =>
       <div className="ant-col ant-col-xs-24 ant-col-md-19">
         <div className="ant-row F-pFw rowgap">
           <div className="ant-col  ant-col-xs-7 ant-col-sm-6 ant-col-md-5 ant-col-lg-4">
-            <img alt='album art' src='/prodthumb.png' />
+            <img alt='album art' src={producer_img} />
           </div>
           <div className="ant-col _2whaa ant-col-xs-17 ant-col-lg-20">
             <div className="ant-row _3EW_U rowgap">
