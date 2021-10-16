@@ -314,7 +314,7 @@ const Index = ({spotify, search}) =>
 
   async function getAlbum(query)
   {
-    const url = 'https://whoproduced.herokuapp.com/search'
+    const url = 'https://whoproduced.herokuapp.com/api/search'
 
     const headers = {
       "Content-Type": "application/json"
@@ -322,8 +322,6 @@ const Index = ({spotify, search}) =>
 
     const data = {
       query ,
-      type: 'track',
-      limit:'5'
     }
 
     console.log(url , query)
