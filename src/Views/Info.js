@@ -10,42 +10,31 @@ import { GetTrack } from '../Services/SpotifyApi';
 
 
 export const Info = ({spotify}) =>
-{ // Views Information for selected track
-  const id = useParams().id // id of selected track
-
-  const [producer, setproducer] = useState([]); // producer info
-  // selected track object
+{
+  const track_id = useParams().id
+  const [producer_info, setProducerInfo] = useState([])
   const [track, SetTrack] = useState(null)
-
-  const [spinner, setspinner] = useState(false);
-
-  const [wikiurl, setwikiurl] = useState('/#');
-
-  const [err_timeout, SetErrorTimeout] = useState(0)  // state for managing removal / timing out of the error 
-  const [show_error, SetError] = useState('');
+  const [spinner, setspinner] = useState(false)
+  const [wikiurl, setwikiurl] = useState('/#')
+  const [err_timeout, SetErrorTimeout] = useState(0)
+  const [show_error, SetError] = useState('')
   const [error_header, SetErrorHeader] = useState("Error")
 
 
   useEffect(async () => {
-    const track = await GetTrack(id)
+    const track = await GetTrack(track_id)
     SetTrack(track)
-
     setspinner(true);
-
     const main_response = await SearchWiki(track, SetError, SetErrorHeader, SetErrorTimeout, err_timeout)
     const wikiurl = main_response.wiki_url
-
     const producer = main_response.producer
     console.log('main response ==>', main_response)
-
     if (wikiurl && producer ) {
-      setproducer(producer);
+      setProducerInfo(producer)
       setwikiurl(wikiurl)
     }
-
-    setspinner(false);
-    // eslint-disable-next-line
-  }, []);
+    setspinner(false)
+  }, [])
 
 
   return (
@@ -59,7 +48,6 @@ export const Info = ({spotify}) =>
         */
       }
       <ViewHeader track={track} wiki={wikiurl} show={track ? true : false} />
-      
       <div className='hh my-4'>
       {
         /*
@@ -68,7 +56,7 @@ export const Info = ({spotify}) =>
         * 
         */
       }
-      <ViewProducer producer={producer} />
+      <ViewProducer producer={producer_info} />
       <Spinner show={spinner} />
       <Error error={show_error} error_header={error_header} />    
       </div>
